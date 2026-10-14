@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block title %}Add Record{% endblock %}
+{% block content %}
+<h1>Add New Book</h1>
+<form class="form-card" method="POST" action="{{ url_for('add_record') }}">
+  <label>Title</label>
+  <input type="text" name="title" required>
+
+  <label>Author</label>
+  <input type="text" name="author" required>
+
+  <label>Genre</label>
+  <input type="text" name="genre" required>
+
+  <label>Copies</label>
+  <input type="number" name="copies" min="0" value="1" required>
+
+  <label>Item Type</label>
+  <select name="item_type">
+    <option value="Book">Physical Book</option>
+    <option value="ebook">E-Book</option>
+  </select>
+
+  <button class="btn primary" type="submit">Save Record</button>
+  <a class="btn" href="{{ url_for('view_records') }}">Cancel</a>
+</form>
+{% endblock %}

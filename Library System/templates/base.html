@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{% block title %}Library System{% endblock %}</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+<header class="topbar">
+  <div class="brand">📚 LibSys</div>
+  <nav>
+    {% if user %}
+      <a href="{{ url_for('dashboard') }}">Dashboard</a>
+      <a href="{{ url_for('view_records') }}">Books</a>
+      <a href="{{ url_for('search') }}">Search</a>
+      {% if user.can_do('view_own_requests') or user.can_do('view_requests') %}
+        <a href="{{ url_for('requests_page') }}">Requests</a>
+      {% endif %}
+      {% if user.can_do('add_book') %}
+        <a href="{{ url_for('add_record') }}">Add Book</a>
+      {% endif %}
+      {% if user.role == 'admin' %}<a href="{{ url_for('manage_users') }}">Users</a>{% endif %}
+      <span class="badge role-{{ user.role }}">{{ user.role|upper }}</span>
+      <a class="btn-logout" href="{{ url_for('logout') }}">Logout</a>
+    {% endif %}
+  </nav>
+</header>
+
+<main class="container">
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      {% for category, message in messages %}
+        <div class="alert {{ category }}">{{ message }}</div>
+      {% endfor %}
+    {% endif %}
+  {% endwith %}
+
+  {% block content %}{% endblock %}
+</main>
+
+<footer>Library Management System · Flask + Python Lists + OOP</footer>
+</body>
+</html>

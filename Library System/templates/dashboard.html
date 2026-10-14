@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+{% block title %}{{ title }}{% endblock %}
+{% block content %}
+<section class="dash-head role-{{ user.role }}">
+  <h1>{{ title }}</h1>
+  <p>Signed in as <strong>{{ user.full_name }}</strong> (@{{ user.username }}) · <span class="badge role-{{ user.role }}">{{ user.role|upper }}</span></p>
+</section>
+
+<div class="stat-grid">
+  <div class="stat"><span>{{ total_books }}</span>Books</div>
+  <div class="stat"><span>{{ total_requests }}</span>Requests</div>
+  {% if user.can_do('manage_users') %}
+    <div class="stat"><span>{{ total_users }}</span>Users</div>
+  {% endif %}
+</div>
+
+<section class="panel">
+  <h2>Your Permissions</h2>
+  <ul class="perm-list">
+    {% for p in perms %}<li>{{ p.replace('_', ' ')|title }}</li>{% endfor %}
+  </ul>
+</section>
+
+<div class="action-grid">
+  <a class="action" href="{{ url_for('view_records') }}">📖 View Records</a>
+  <a class="action" href="{{ url_for('search') }}">🔍 Search Books</a>
+  {% if user.can_do('add_book') %}<a class="action" href="{{ url_for('add_record') }}">➕ Add Book</a>{% endif %}
+  {% if user.can_do('view_requests') or user.can_do('view_own_requests') %}
+    <a class="action" href="{{ url_for('requests_page') }}">📩 Requests</a>{% endif %}
+  {% if user.can_do('manage_users') %}<a class="action" href="{{ url_for('manage_users') }}">👥 Manage Users</a>{% endif %}
+</div>
+
+{% if my_requests %}
+<section class="panel">
+  <h2>My Borrow Requests</h2>
+  <table>
+    <tr><th>Book</th><th>Status</th></tr>
+    {% for r in my_requests %}
+      <tr><td>{{ r.book_title }}</td><td><span class="pill {{ r.status }}">{{ r.status }}</span></td></tr>
+    {% endfor %}
+  </table>
+</section>
+{% endif %}
+
+{% if all_requests %}
+<section class="panel">
+  <h2>All Requests</h2>
+  <table>
+    <tr><th>#</th><th>Student</th><th>Book</th><th>Status</th></tr>
+    {% for r in all_requests %}
+      <tr><td>{{ r.request_id }}</td><td>{{ r.username }}</td><td>{{ r.book_title }}</td>
+          <td><span class="pill {{ r.status }}">{{ r.status }}</span></td></tr>
+    {% endfor %}
+  </table>
+  <a class="btn" href="{{ url_for('requests_page') }}">Manage Requests</a>
+</section>
+{% endif %}
+
+{% if logs %}
+<section class="panel">
+  <h2>Recent Activity (Admin only)</h2>
+  <ul class="log">{% for l in logs %}<li>{{ l }}</li>{% endfor %}</ul>
+</section>
+{% endif %}
+{% endblock %}

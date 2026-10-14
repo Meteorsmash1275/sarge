@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block title %}View Records{% endblock %}
+{% block content %}
+<h1>{% if users_needed %}Registered Users{% else %}Book Records{% endif %}</h1>
+
+{% if not users_needed %}
+<form class="inline-search" method="GET" action="{{ url_for('view_records') }}">
+  <input type="text" name="q" value="{{ keyword }}" placeholder="Filter by title, author, genre...">
+  <button class="btn primary" type="submit">Filter</button>
+</form>
+
+<table>
+  <tr><th>ID</th><th>Title</th><th>Author</th><th>Genre</th><th>Type</th><th>Copies</th><th>Actions</th></tr>
+  {% for b in books %}
+    <tr>
+      <td>{{ b.book_id }}</td>
+      <td>{{ b.title }}</td>
+      <td>{{ b.author }}</td>
+      <td>{{ b.genre }}</td>
+      <td>{{ b.item_type() }}</td>
+      <td>{{ b.copies }}</td>
+      <td>
+        {% if can_edit %}<a class="btn small" href="{{ url_for('edit_record', book_id=b.book_id) }}">Edit</a>{% endif %}
+        {% if can_delete %}
+        <form method="POST" action="{{ url_for('delete_record', book_id=b.book_id) }}"
+              onsubmit="return confirm('Delete this book?');" style="display:inline">
+          <button class="btn small danger" type="submit">Delete</button>
+        </form>
+        {% endif %}
+        {% if user and user.can_do('make_request') %}
+        <form method="POST" action="{{ url_for('requests_page') }}" style="display:inline">
+          <input type="hidden" name="action" value="create">
+          <input type="hidden" name="book_id" value="{{ b.book_id }}">
+          <button class="btn small" type="submit">Request</button>
+        </form>
+        {% endif %}
+      </td>
+    </tr>
+  {% else %}
+    <tr><td colspan="7" class="empty">No records to display.</td></tr>
+  {% endfor %}
+</table>
+
+{% else %}
+<table>
+  <tr><th>ID</th><th>Username</th><th>Full Name</th><th>Role</th></tr>
+  {% for u in users %}
+    <tr><td>{{ u.user_id }}</td><td>{{ u.username }}</td><td>{{ u.full_name }}</td><td>{{ u.role }}</td></tr>
+  {% endfor %}
+</table>
+{% endif %}
+{% endblock %}

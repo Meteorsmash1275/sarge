@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block title %}Login{% endblock %}
+{% block content %}
+<div class="auth-card">
+  <h1>Library System</h1>
+  <p class="sub">Log in to continue</p>
+
+  <form method="POST" action="{{ url_for('login') }}">
+    <label>Username</label>
+    <input type="text" name="username" placeholder="e.g. admin" required>
+
+    <label>Password</label>
+    <input type="password" name="password" placeholder="Your password" required>
+
+    <button type="submit" class="btn primary">Log In</button>
+  </form>
+
+  <p class="switch">No account yet? <a href="{{ url_for('signup') }}">Sign up here</a></p>
+
+  <div class="test-accounts">
+    <strong>Test accounts</strong>
+    <ul>
+      <li>admin / admin123</li>
+      <li>staff / staff123</li>
+      <li>student / student123</li>
+    </ul>
+  </div>
+</div>
+{% endblock %}

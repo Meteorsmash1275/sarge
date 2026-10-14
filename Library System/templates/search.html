@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% block title %}Search{% endblock %}
+{% block content %}
+<h1>Search Books</h1>
+
+<form class="inline-search" method="POST" action="{{ url_for('search') }}">
+  <input type="text" name="keyword" value="{{ keyword }}"
+         placeholder="Title, author or genre..." autofocus>
+  <button class="btn primary" type="submit">Search</button>
+</form>
+
+{% if is_recommendation %}
+  <h2>📚 Books We Have</h2>
+  <p class="sub">Available copies first. Type a title, author or genre above to narrow it down.</p>
+{% else %}
+  <p class="sub">Results for "<strong>{{ keyword }}</strong>"</p>
+{% endif %}
+
+<table>
+  <tr>
+    <th>ID</th><th>Title</th><th>Author</th><th>Genre</th>
+    <th>Type</th><th>Copies</th><th>Status</th><th></th>
+  </tr>
+  {% for b in results %}
+    <tr>
+      <td>{{ b.book_id }}</td>
+      <td>{{ b.title }}</td>
+      <td>{{ b.author }}</td>
+      <td>{{ b.genre }}</td>
+      <td>{{ b.item_type() }}</td>
+      <td>{{ b.copies }}</td>
+      <td>
+        {% if b.is_available() %}
+          <span class="pill approved">Available</span>
+        {% else %}
+          <span class="pill rejected">Unavailable</span>
+        {% endif %}
+      </td>
+      <td>
+        {% if can_request and b.is_available() %}
+        <form method="POST" action="{{ url_for('requests_page') }}">
+          <input type="hidden" name="action" value="create">
+          <input type="hidden" name="book_id" value="{{ b.book_id }}">
+          <button class="btn small" type="submit">Request</button>
+        </form>
+        {% endif %}
+      </td>
+    </tr>
+  {% else %}
+    <tr><td colspan="8" class="empty">No matching records.</td></tr>
+  {% endfor %}
+</table>
+{% endblock %}

@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% block title %}Requests{% endblock %}
+{% block content %}
+<h1>Borrow Requests</h1>
+
+{% if can_create %}
+<section class="panel">
+  <h2>Send a Request</h2>
+  {% if available_books %}
+  <form method="POST" action="{{ url_for('requests_page') }}" class="inline-search">
+    <input type="hidden" name="action" value="create">
+    <select name="book_id" required>
+      <option value="">— Choose a book —</option>
+      {% for b in available_books %}
+        <option value="{{ b.book_id }}">
+          {{ b.title }} — {{ b.author }} ({{ b.copies }} left)
+        </option>
+      {% endfor %}
+    </select>
+    <button class="btn primary" type="submit">Request Book</button>
+  </form>
+  {% else %}
+    <p class="sub">No books are currently available to request.</p>
+  {% endif %}
+</section>
+{% endif %}
+
+<table>
+  <tr><th>#</th><th>Student</th><th>Book</th><th>Status</th>{% if can_manage %}<th>Action</th>{% endif %}</tr>
+  {% for r in rows %}
+    <tr>
+      <td>{{ r.request_id }}</td><td>{{ r.username }}</td><td>{{ r.book_title }}</td>
+      <td><span class="pill {{ r.status }}">{{ r.status }}</span></td>
+      {% if can_manage %}
+      <td>
+        <form method="POST" action="{{ url_for('requests_page') }}" style="display:inline">
+          <input type="hidden" name="action" value="approve">
+          <input type="hidden" name="request_id" value="{{ r.request_id }}">
+          <button class="btn small" type="submit">Approve</button>
+        </form>
+        <form method="POST" action="{{ url_for('requests_page') }}" style="display:inline">
+          <input type="hidden" name="action" value="reject">
+          <input type="hidden" name="request_id" value="{{ r.request_id }}">
+          <button class="btn small danger" type="submit">Reject</button>
+        </form>
+      </td>
+      {% endif %}
+    </tr>
+  {% else %}
+    <tr><td colspan="5" class="empty">No requests yet.</td></tr>
+  {% endfor %}
+</table>
+{% endblock %}

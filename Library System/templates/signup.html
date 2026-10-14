@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block title %}Sign Up{% endblock %}
+{% block content %}
+<div class="auth-card">
+  <h1>Create Account</h1>
+  <p class="sub">Choose the role you need</p>
+
+  <form method="POST" action="{{ url_for('signup') }}">
+    <label>Full Name</label>
+    <input type="text" name="full_name" placeholder="Juan Dela Cruz" required>
+
+    <label>Username</label>
+    <input type="text" name="username" placeholder="min. 3 characters" required>
+
+    <label>Password</label>
+    <input type="password" name="password" placeholder="min. 4 characters" required>
+
+    <label>Confirm Password</label>
+    <input type="password" name="confirm" placeholder="repeat password" required>
+
+    <label>Role</label>
+    <select name="role">
+      {% for r in roles %}
+        <option value="{{ r }}" {% if r == 'student' %}selected{% endif %}>{{ r|title }}</option>
+      {% endfor %}
+    </select>
+
+    <button type="submit" class="btn primary">Sign Up</button>
+  </form>
+
+  <p class="switch">Already registered? <a href="{{ url_for('login') }}">Back to login</a></p>
+</div>
+{% endblock %}
